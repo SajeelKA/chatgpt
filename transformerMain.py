@@ -51,7 +51,7 @@ class multiHeadAttn(nn.Module):
     QkDotProduct = torch.matmul(Q,K.transpose(-2,-1))/torch.sqrt(torch.Tensor([self.d_k]).to(device = self.processor))# B, T, T
     #each row is 1 timestep more
     successiveTokensMask = torch.tril(torch.ones(T,T)).view(1,1,T,T).to(device = self.processor)
-    # setting everything ahead of the mask to infinity to make sure labels aren't included in training data
+    # setting everything ahead of the mask to infinity to make sure future labels aren't included in training data
     QkDotProduct = QkDotProduct.masked_fill(successiveTokensMask[:,:,:T,:T] == 0, float('-inf'))
     #gives scores per query with respect to the key it matches (softmax on final dim with shape = B, T, C)
     dotProdAttn = torch.softmax(QkDotProduct, dim=-1)
